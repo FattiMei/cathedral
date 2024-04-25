@@ -11,7 +11,7 @@ target = test
 all: $(target)
 
 
-$(target): build/main.o build/window.o build/render.o
+$(target): build/main.o build/window.o build/render.o build/shader.o
 	$(CXX) -o $@ $^ $(LIBS)
 
 
@@ -20,7 +20,7 @@ build/%.o: src/%.cpp
 
 
 run: $(target)
-	./$^ | python3 ./plot.py
+	./$^
 
 
 .PHONY: clean
