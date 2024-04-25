@@ -3,6 +3,7 @@
 #include <random>
 #include <vector>
 #include <cassert>
+#include "window.h"
 
 
 // @TODO: experiment better with std::array, I couldn't compile this code
@@ -50,10 +51,48 @@ double cross_correlation(const std::vector<double> &track, size_t phi) {
 }
 
 
+void experiment_init(int width, int height) {
+	glViewport(0, 0, width, height);
+}
+
+
+void experiment_render() {
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+
+void experiment_resize(int width, int height) {
+	glViewport(0, 0, width, height);
+}
+
+
 int main() {
+	int width = 800;
+	int height = 600;
+
+	if (window_init("cathedral", width, height) != 0) {
+		window_close();
+		exit(EXIT_FAILURE);
+	}
+
+	experiment_init(width, height);
+	window_set_callbacks();
+
+	while (!window_should_close()) {
+		experiment_render();
+
+		window_swap_buffers();
+		window_poll_events();
+	}
+
+	window_close();
+
+#if 0
 	std::default_random_engine gen(0);
 	std::uniform_real_distribution<double> uniform(-1.0, 1.0);
 	std::vector<double> example;
+
 
 	for (int i = 0; i < 1000; ++i) {
 		example.push_back(uniform(gen));
@@ -66,6 +105,7 @@ int main() {
 	for (size_t i = 0; i < example.size(); ++i) {
 		std::cout << cross_correlation(example, i) << std::endl;
 	}
+#endif
 
 	return 0;
 }
