@@ -11,7 +11,7 @@ target = test
 all: $(target)
 
 
-$(target): build/main.o build/window.o
+$(target): build/main.o build/window.o build/render.o
 	$(CXX) -o $@ $^ $(LIBS)
 
 

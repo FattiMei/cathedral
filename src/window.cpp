@@ -1,6 +1,6 @@
 #include "window.h"
-#include "experiment.h"
-#include <stdio.h>
+#include "render.h"
+#include <cstdio>
 
 
 #ifdef USE_OPENGLES2
@@ -126,7 +126,7 @@ static void mouse_button_callback(GLFWwindow* /*window*/, int button, int action
 
 
 static void resize_callback(GLFWwindow* /*window*/, int width, int height) {
-	experiment_resize(width, height);
+	render_resize(width, height);
 }
 
 

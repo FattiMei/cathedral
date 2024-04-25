@@ -4,6 +4,7 @@
 #include <vector>
 #include <cassert>
 #include "window.h"
+#include "render.h"
 
 
 // @TODO: experiment better with std::array, I couldn't compile this code
@@ -51,22 +52,6 @@ double cross_correlation(const std::vector<double> &track, size_t phi) {
 }
 
 
-void experiment_init(int width, int height) {
-	glViewport(0, 0, width, height);
-}
-
-
-void experiment_render() {
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-}
-
-
-void experiment_resize(int width, int height) {
-	glViewport(0, 0, width, height);
-}
-
-
 int main() {
 	int width = 800;
 	int height = 600;
@@ -76,11 +61,11 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
-	experiment_init(width, height);
+	render_init(width, height);
 	window_set_callbacks();
 
 	while (!window_should_close()) {
-		experiment_render();
+		render_present();
 
 		window_swap_buffers();
 		window_poll_events();
