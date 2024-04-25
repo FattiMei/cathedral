@@ -3,7 +3,8 @@
 #include <GLFW/glfw3.h>
 
 
-GLint program;
+GLint  program;
+GLuint point_buffer;
 
 
 static const char* vertex_shader_src = R"a(
@@ -33,11 +34,15 @@ const float vertices[] = {
 
 
 void render_init(int width, int height) {
+	glGenBuffers(1, &point_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, point_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+
 	program = program_load(vertex_shader_src, fragment_shader_src);
 
 	glBindAttribLocation(program, 0, "vposition");
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, vertices);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glUseProgram(program);
 	glUniform3f(glGetUniformLocation(program, "color"), 1.0, 0.0, 0.0);
@@ -57,4 +62,9 @@ void render_present() {
 
 	glUseProgram(program);
 	glDrawArrays(GL_LINE_STRIP, 0, 3);
+}
+
+
+void render_cleanup() {
+	glDeleteBuffers(1, &point_buffer);
 }

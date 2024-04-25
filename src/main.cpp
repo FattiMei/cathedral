@@ -26,6 +26,7 @@ int main() {
 		window_poll_events();
 	}
 
+	render_cleanup();
 	window_close();
 
 	return 0;

@@ -5,6 +5,7 @@
 void render_init(int width, int height);
 void render_resize(int width, int height);
 void render_present();
+void render_cleanup();
 
 
 #endif
