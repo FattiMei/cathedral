@@ -8,7 +8,7 @@ target = test
 all: $(target)
 
 
-$(target): main.cpp
+$(target): src/main.cpp
 	$(CXX) $(WARNINGS) -o $@ $^
 
 
