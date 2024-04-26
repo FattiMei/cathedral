@@ -5,6 +5,7 @@
 #include <cassert>
 #include "window.h"
 #include "render.h"
+#include "processing.h"
 
 
 int main() {
@@ -17,6 +18,10 @@ int main() {
 	}
 
 	render_init(width, height);
+
+	Track T{-0.2, 0.0, 0.4};
+	render_send_points(T);
+
 	window_set_callbacks();
 
 	while (!window_should_close()) {

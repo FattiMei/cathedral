@@ -5,6 +5,7 @@
 
 GLint  program;
 GLuint point_buffer;
+GLint  npoints;
 
 
 static const char* vertex_shader_src = R"a(
@@ -35,14 +36,7 @@ const float vertices[] = {
 
 void render_init(int width, int height) {
 	glGenBuffers(1, &point_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, point_buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-
 	program = program_load(vertex_shader_src, fragment_shader_src);
-
-	glBindAttribLocation(program, 0, "vposition");
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glUseProgram(program);
 	glUniform3f(glGetUniformLocation(program, "color"), 1.0, 0.0, 0.0);
@@ -61,10 +55,32 @@ void render_present() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(program);
-	glDrawArrays(GL_LINE_STRIP, 0, 3);
+	glDrawArrays(GL_LINE_STRIP, 0, npoints);
 }
 
 
 void render_cleanup() {
 	glDeleteBuffers(1, &point_buffer);
+}
+
+
+void render_send_points(const Track &T) {
+	std::vector<float> local_buffer(2 * T.size());
+
+	for (size_t i = 0; i < T.size(); ++i) {
+		local_buffer[2*i    ] = -1.0f + 2.0f * static_cast<float>(i) / static_cast<float>(T.size() - 1);
+		local_buffer[2*i + 1] = static_cast<float>(T[i]);
+	}
+
+	// we need to transform the coordinates according to an algorithm
+
+	// @TODO: exists a sizeof(std::vector) ??
+	glBindBuffer(GL_ARRAY_BUFFER, point_buffer);
+	glBufferData(GL_ARRAY_BUFFER, local_buffer.size() * sizeof(float), local_buffer.data(), GL_DYNAMIC_DRAW);
+
+	glBindAttribLocation(program, 0, "vposition");
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	npoints = T.size();
 }

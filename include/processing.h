@@ -3,6 +3,10 @@
 
 
 #include <vector>
+#include <iostream>
+
+
+using Track = std::vector<double>;
 
 
 double compute_mean(const std::vector<double> &track);
