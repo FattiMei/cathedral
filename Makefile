@@ -1,17 +1,19 @@
-CXX = g++
+CXX      = g++
 INCLUDE  = -I ./include
 WARNINGS = -Wall -Wextra -Wpedantic
 DEFINES  = -DUSE_OPENGLES2
 LIBS     = -lglfw -lGL
 
 
-target = test
+src      = $(wildcard src/*.cpp)
+obj      = $(patsubst src/%.cpp,build/%.o,$(src))
+target   = test
 
 
 all: $(target)
 
 
-$(target): build/main.o build/window.o build/render.o build/shader.o
+$(target): $(obj)
 	$(CXX) -o $@ $^ $(LIBS)
 
 

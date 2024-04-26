@@ -1,4 +1,6 @@
 #include "processing.h"
+#include <random>
+#include <cassert>
 
 
 #if 0
@@ -58,6 +60,25 @@ double cross_correlation(const std::vector<double> &track, size_t phi) {
 	for (size_t i = 0; i < track.size(); ++i) {
 		result += track[i] * track[(i + phi) % track.size()];
 	}
+
+	return result;
+}
+
+
+Track generate_centered_track(size_t nsamples) {
+	Track result(nsamples);
+
+	std::default_random_engine gen(0);
+	std::uniform_real_distribution<double> uniform(-1.0, 1.0);
+
+	for (auto &s : result) {
+		s = uniform(gen);
+	}
+
+	center(result);
+
+	// @DESIGN: possible clipping needed
+	// @DESIGN: is there a good algorithm to generate zero mean signals?
 
 	return result;
 }

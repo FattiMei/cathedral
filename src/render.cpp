@@ -27,13 +27,6 @@ static const char* fragment_shader_src = R"a(
 )a";
 
 
-const float vertices[] = {
-	-1.0f, 0.0f,
-	 0.0f, 0.5f,
-	 1.0f, 0.2f
-};
-
-
 void render_init(int width, int height) {
 	glGenBuffers(1, &point_buffer);
 	program = program_load(vertex_shader_src, fragment_shader_src);
@@ -64,7 +57,7 @@ void render_cleanup() {
 }
 
 
-void render_send_points(const Track &T) {
+void render_send_points(const std::vector<double> &T) {
 	std::vector<float> local_buffer(2 * T.size());
 
 	for (size_t i = 0; i < T.size(); ++i) {

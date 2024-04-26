@@ -19,7 +19,7 @@ int main() {
 
 	render_init(width, height);
 
-	Track T{-0.2, 0.0, 0.4};
+	Track T = generate_centered_track(100);
 	render_send_points(T);
 
 	window_set_callbacks();

@@ -11,7 +11,7 @@ void render_present();
 void render_cleanup();
 
 
-void render_send_points(const Track &T);
+void render_send_points(const std::vector<double> &T);
 
 
 #endif
