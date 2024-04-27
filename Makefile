@@ -1,8 +1,8 @@
 CXX      = g++
 INCLUDE  = -I ./include
 WARNINGS = -Wall -Wextra -Wpedantic
-DEFINES  = -DUSE_OPENGLES2
-LIBS     = -lglfw -lGL
+DEFINES  = -DUSE_OPENGLES2 -DIMGUI_IMPL_OPENGL_ES2
+LIBS     = -lglfw -lGL -ldl
 
 
 src      = $(wildcard src/*.cpp)

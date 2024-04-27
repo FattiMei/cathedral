@@ -1,11 +1,10 @@
-#include <iostream>
-#include <algorithm>
-#include <random>
 #include <vector>
-#include <cassert>
 #include "window.h"
 #include "render.h"
 #include "processing.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 
 int main() {
@@ -19,16 +18,38 @@ int main() {
 
 	render_init(width, height);
 
-	Track T = generate_centered_track(100);
-	render_send_points(T);
+	Track T = generate_centered_track(1000);
+	apply_delay(T, 240, 0.5);
+	std::vector<double> auto_correlation(T.size());
 
-	window_set_callbacks();
+	for (size_t i = 0; i < T.size(); ++i) {
+		auto_correlation[i] = cross_correlation(T, i);
+	}
+
+	render_send_points(auto_correlation);
+
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 100");
 
 	while (!window_should_close()) {
+		window_poll_events();
+
 		render_present();
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		ImGui::ShowDemoWindow(NULL);
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		window_swap_buffers();
-		window_poll_events();
 	}
 
 	render_cleanup();
