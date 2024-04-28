@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include "window.h"
 #include "render.h"
@@ -18,15 +19,11 @@ int main() {
 
 	render_init(width, height);
 
-	Track T = generate_centered_track(1000);
-	apply_delay(T, 240, 0.5);
-	std::vector<double> auto_correlation(T.size());
+	Track original = generate_centered_track(1000);
+	Track delayed(original.size());
+	std::vector<double> auto_correlation(original.size() / 2);
 
-	for (size_t i = 0; i < T.size(); ++i) {
-		auto_correlation[i] = cross_correlation(T, i);
-	}
 
-	render_send_points(auto_correlation);
 
 
 	IMGUI_CHECKVERSION();
@@ -36,15 +33,47 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 100");
 
+	float old_pan = 0.5f;
+	float new_pan = old_pan;
+
+	int old_delay = 200;
+	int new_delay = old_delay;
+
+	apply_delay(original, delayed, new_delay, 0.5);
+
+	for (size_t i = 0; i < auto_correlation.size(); ++i) {
+		auto_correlation[i] = cross_correlation(delayed, i);
+	}
+
+	render_send_points(auto_correlation);
+
 	while (!window_should_close()) {
 		window_poll_events();
 
+		int display_w, display_h;
+		glfwGetFramebufferSize(window, &display_w, &display_h);
+
+		render_resize(display_w, display_h);
 		render_present();
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		ImGui::ShowDemoWindow(NULL);
+
+		ImGui::SliderFloat("pan controls", &new_pan, 0.0f, 1.0f, "pan = %.3f");
+		ImGui::SliderInt("slider int", &new_delay, 0, original.size() - 1);
+
+		if (old_pan != new_pan or old_delay != new_delay) {
+			old_pan = new_pan;
+
+			apply_delay(original, delayed, new_delay, new_pan);
+
+			for (size_t i = 0; i < auto_correlation.size(); ++i) {
+				auto_correlation[i] = cross_correlation(delayed, i);
+			}
+
+			render_send_points(auto_correlation);
+		}
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

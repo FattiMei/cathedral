@@ -43,14 +43,14 @@ void center(std::vector<double> &track) {
 }
 
 
-void apply_delay(std::vector<double> &track, size_t tau, double pan) {
+void apply_delay(const Track &original, Track &delayed, size_t tau, double pan) {
 	assert(pan >= 0.0 and pan <= 1.0);
 
-	for (size_t i = tau; i < track.size(); ++i) {
-		track[i] = pan * track[i - tau] + (1.0 - pan) * track[i];
+	for (size_t i = tau; i < original.size(); ++i) {
+		delayed[i] = pan * original[i - tau] + (1.0 - pan) * original[i];
 	}
 
-	center(track);
+	center(delayed);
 }
 
 
