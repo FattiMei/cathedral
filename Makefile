@@ -1,13 +1,18 @@
-CXX      = g++
-INCLUDE  = -I ./include
-WARNINGS = -Wall -Wextra -Wpedantic
-DEFINES  = -DUSE_OPENGLES2 -DIMGUI_IMPL_OPENGL_ES2
-LIBS     = -lglfw -lGL -ldl
+CXX          = g++
+INCLUDE      = -I ./include -I ./imgui/include
+WARNINGS     = -Wall -Wextra -Wpedantic
+IMGUI_CONFIG = -DIMGUI_IMPL_OPENGL_ES2
+DEFINES      = -DUSE_OPENGLES2
+LIBS         = -lglfw -lGL -ldl
 
 
-src      = $(wildcard src/*.cpp)
-obj      = $(patsubst src/%.cpp,build/%.o,$(src))
-target   = test
+imgui_src = $(wildcard imgui/src/*.cpp)
+src       = $(wildcard src/*.cpp)
+obj      += $(patsubst src/%.cpp,build/%.o,$(src))
+obj      += build/imgui.so
+
+
+target    = test
 
 
 all: $(target)
@@ -21,10 +26,18 @@ build/%.o: src/%.cpp
 	$(CXX) -c $(INCLUDE) $(WARNINGS) $(DEFINES) -o $@ $^
 
 
+build/imgui.so: $(imgui_src)
+	$(CXX) -shared $(IMGUI_CONFIG) $(INCLUDE) -o $@ $^
+
+
 run: $(target)
 	./$^
 
 
-.PHONY: clean
+.PHONY: clean fullclean
 clean:
-	rm -f $(target) build/*.o
+	rm -f $(target) $(obj)
+
+
+fullclean: clean
+	rm -f build/imgui.o
