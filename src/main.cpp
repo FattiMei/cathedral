@@ -12,8 +12,8 @@ int main() {
 	int width = 800;
 	int height = 600;
 
-	if (window_init("cathedral", width, height) != 0) {
-		window_close();
+	if (Window::create("cathedral", width, height) != 0) {
+		Window::close();
 		exit(EXIT_FAILURE);
 	}
 
@@ -30,7 +30,7 @@ int main() {
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplGlfw_InitForOpenGL(Window::handle, true);
 	ImGui_ImplOpenGL3_Init("#version 100");
 
 	float old_pan = 0.5f;
@@ -47,11 +47,11 @@ int main() {
 
 	render_send_points(auto_correlation);
 
-	while (!window_should_close()) {
-		window_poll_events();
+	while (!Window::should_close()) {
+		Window::poll_events();
 
 		int display_w, display_h;
-		glfwGetFramebufferSize(window, &display_w, &display_h);
+		glfwGetFramebufferSize(Window::handle, &display_w, &display_h);
 
 		render_resize(display_w, display_h);
 		render_present();
@@ -78,11 +78,11 @@ int main() {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		window_swap_buffers();
+		Window::swap_buffers();
 	}
 
 	render_cleanup();
-	window_close();
+	Window::close();
 
 	return 0;
 }

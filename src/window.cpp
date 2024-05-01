@@ -1,10 +1,9 @@
 #include "window.h"
-#include "render.h"
 #include <cstdio>
 
 
 #ifdef USE_OPENGLES2
-static const int default_window_hints[][2] = {
+static const std::vector<std::pair<int,int>> default_window_hints = {
 	{GLFW_RESIZABLE			, GLFW_TRUE			},
 	{GLFW_VISIBLE			, GLFW_TRUE			},
 	{GLFW_DECORATED			, GLFW_TRUE			},
@@ -43,7 +42,7 @@ static const int default_window_hints[][2] = {
 	{GLFW_OPENGL_PROFILE		, GLFW_OPENGL_ANY_PROFILE	}
 };
 #else
-static const int default_window_hints[][2] = {
+static const std::vector<std::pair<int,int>> default_window_hints = {
 	{GLFW_RESIZABLE			, GLFW_TRUE			},
 	{GLFW_VISIBLE			, GLFW_TRUE			},
 	{GLFW_DECORATED			, GLFW_TRUE			},
@@ -84,100 +83,59 @@ static const int default_window_hints[][2] = {
 #endif
 
 
-GLFWwindow *window = NULL;
-
-
 static void error_callback(int error, const char* description) {
 	fprintf(stderr, "GLFW error (code %d): %s\n", error, description);
 }
 
 
-static void key_callback(GLFWwindow* window, int key, int /*scancode*/, int action, int /*mods*/) {
-	switch (key) {
-		case GLFW_KEY_W: break;
-		case GLFW_KEY_A: break;
-		case GLFW_KEY_S: break;
-		case GLFW_KEY_D: break;
+namespace Window {
+	GLFWwindow *handle = NULL;
+
+
+	int create(const std::string &title, int width, int height) {
+		glfwInit();
+
+		glfwSetErrorCallback(error_callback);
+		set_hints(default_window_hints);
+
+		handle = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+		if (handle == NULL) {
+			glfwTerminate();
+			return -1;
+		}
+
+		glfwMakeContextCurrent(handle);
+
+		// @TODO: do we need to care about swap interval? Investigate
+		glfwSwapInterval(1);
+
+		return 0;
 	}
 
-	switch (action) {
-		case GLFW_PRESS  : break;
-		case GLFW_REPEAT : break;
-		case GLFW_RELEASE: break;
+
+	void set_hints(const std::vector<std::pair<int,int>> &hints) {
+		for (auto hint : hints) {
+			glfwWindowHint(hint.first, hint.second);
+		}
 	}
 
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	}
-}
 
-
-static void mouse_button_callback(GLFWwindow* /*window*/, int button, int action, int /*mods*/) {
-	switch (button) {
-		case GLFW_MOUSE_BUTTON_LEFT  : break;
-		case GLFW_MOUSE_BUTTON_RIGHT : break;
+	void swap_buffers() {
+		glfwSwapBuffers(handle);
 	}
 
-	switch (action) {
-		case GLFW_PRESS  : break;
-		case GLFW_RELEASE: break;
+
+	void poll_events() {
+		glfwPollEvents();
 	}
-}
 
 
-static void resize_callback(GLFWwindow* /*window*/, int width, int height) {
-	render_resize(width, height);
-}
+	bool should_close() {
+		return glfwWindowShouldClose(handle) != 0;
+	}
 
 
-int window_init(const char *title, int width, int height) {
-	glfwInit();
-
-	glfwSetErrorCallback(error_callback);
-	window_set_hints(default_window_hints, sizeof(default_window_hints) / (2 * sizeof(int)));
-
-	window = glfwCreateWindow(width, height, title, NULL, NULL);
-	if (window == NULL) {
+	void close() {
 		glfwTerminate();
-		return -1;
 	}
-
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
-
-	return 0;
-}
-
-
-void window_set_hints(const int hints[][2], int n) {
-	for (int i = 0; i < n; ++i) {
-		glfwWindowHint(hints[i][0], hints[i][1]);
-	}
-}
-
-
-void window_set_callbacks() {
-	glfwSetKeyCallback            (window, key_callback);
-	glfwSetMouseButtonCallback    (window, mouse_button_callback);
-	glfwSetFramebufferSizeCallback(window, resize_callback);
-}
-
-
-int window_should_close() {
-	return glfwWindowShouldClose(window);
-}
-
-
-void window_swap_buffers() {
-	glfwSwapBuffers(window);
-}
-
-
-void window_poll_events() {
-	glfwPollEvents();
-}
-
-
-void window_close() {
-	glfwTerminate();
-}
+};

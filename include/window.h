@@ -3,18 +3,20 @@
 
 
 #include <GLFW/glfw3.h>
+#include <vector>
+#include <string>
 
 
-extern GLFWwindow *window;
-
-
-int  window_init(const char *title, int width, int height);
-void window_set_hints(const int hints[][2], int n);
-void window_set_callbacks();
-int  window_should_close();
-void window_swap_buffers();
-void window_poll_events();
-void window_close();
+namespace Window {
+	extern GLFWwindow *handle;
+	int  create(const std::string &title, int width, int height);
+	void set_hints(const std::vector<std::pair<int,int>> &hints);
+	void set_callbacks();
+	void swap_buffers();
+	void poll_events();
+	bool should_close();
+	void close();
+};
 
 
 #endif
