@@ -2,15 +2,19 @@
 
 ## Introduction
 This project started from the Eddie Van Halen song "Cathedral". It features a delayed guitar track and my objective is to retrieve the delay settings using scientific computing.
-If you take a signal and apply delay, the resulting signal will be correlated with the original one. Since there are repeating parts one could argue that the result is correlated with itseld. From a simple research it seems that auto-correlation is a good tool to solve this problem, however my first implementation wasn't yielding the expected results. From my understanding it was because auto-correlation is unstable when applied to non-zero mean signals.
 
+If you take a signal and apply a delay, the resulting signal will be correlated with the original one because there are repeating parts. If you compute the correlation between the delayed track and a translated version (operation known as autocorrelation) the result will hopefully peak when the time translation is equal to the delay.
 
-## Goals
-This projects aims at interactively explore the application fo auto-correlation to solve "inverse delay" problems and in particular:
+My first implementation was numerically unstable, most probably because I was computing the autocorrelation of non-zero mean signals. This project is composed in two parts
+
+## Part 1 - Interactivity
+Develop a simple python application to interactively:
   * generate random signals and apply different delay settings
-  * see in real-time the effect of such changes to the auto-correlation
+  * see in real-time the effect of such changes to the autocorrelation
 
-As a learning experience I will be using:
-  * [smooth-gui](https://github.com/FattiMei/smooth-gui)
-  * ImGui
-  * OpenCL to accelerate on GPU the computation for real-time requirements
+## Part 2 - Full demo
+  * compute the auto correlation for the "Cathedral" track to solve the "inverse delay" problem
+  * estimate with minimal effort the program time
+  * explore different parallelization techniques (openmp, gpu offloading)
+
+This problem is massively parallel but quadratic in the number of samples, we need all the help we can from the hardware.
