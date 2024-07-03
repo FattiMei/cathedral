@@ -14,14 +14,21 @@ def autocorr(x):
     return np.correlate(x, x, mode='full')[(x.size-1):]
 
 
-def delay(track, tau: int):
-    # one repetition for now
-    n = track.size
-
-    if tau >= 0 and tau < n:
-        return track + np.pad(track, (tau, 0))[0:n]
-    else:
+def delay(track, tau: int, effect = 0.5, feedback = 0.5):
+    if tau == 0:
+        return track
+    elif tau < 0 or tau >= track.size:
         return None
+
+    buffer = np.zeros(tau)
+    result = np.zeros(track.size)
+
+    # serial implementation, later will develop the vectorized
+    for i in range(track.size):
+        result[i] += track[i] + effect * buffer[i % tau]
+        buffer[i % tau] = track[i] + feedback * buffer[i % tau]
+
+    return result
 
 
 if __name__ == '__main__':
