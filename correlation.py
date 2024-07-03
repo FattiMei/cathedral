@@ -45,7 +45,7 @@ if __name__ == '__main__':
         ax=ax_delay,
         label='delay steps',
         valmin=0,
-        valmax=original.size,
+        valmax=original.size-1,
         valinit=0,
         valstep=1
     )
