@@ -1,4 +1,5 @@
 import sys
+import time
 import correlation as corr
 from scipy.io import wavfile
 import numpy as np
@@ -25,9 +26,16 @@ if __name__ == '__main__':
     samplerate, data = wavfile.read(sys.argv[1])
     merged_channels = np.asarray(np.sum(data, axis=1), dtype=np.float64)
 
-    plt.plot(
-        np.linspace(0, 1, samplerate),
-        solve_inverse_delay(merged_channels, range(samplerate))
-    )
 
+    # do cross correlations with a maximum shift of 1 second
+    start_time = time.perf_counter()
+    solution = solve_inverse_delay(merged_channels, range(samplerate))
+    print(f'Computation time: {time.perf_counter() - start_time} seconds')
+
+    fig, ax = plt.subplots()
+    ax.set_title('Autocorrelation of a music track')
+    ax.set_xlabel('delay [s]')
+    ax.set_ylabel('autocorrelation')
+    
+    plt.plot(np.linspace(0, 1, samplerate), solution)
     plt.show()
