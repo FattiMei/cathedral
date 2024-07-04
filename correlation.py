@@ -1,4 +1,5 @@
 import numpy as np
+import unittest
 
 
 # maybe we will need FFT based solutions, especially with large tracks
@@ -44,6 +45,37 @@ def delay_vectorized(track, time: int, level=0.5, feedback=0.5):
     remainder = track.size % buffer.size
 
     if remainder != 0:
-        result[(track.size - remainder) :] = track[(track.size - remainder) :] + level * buffer
+        result[(track.size - remainder) :] = track[(track.size - remainder) :] + level * buffer[0 : remainder]
 
     return result
+
+
+class TestDelayImplementations(unittest.TestCase):
+    def test_no_module(self):
+        tau = 30
+        samples     = tau * 12
+        original = np.random.rand(samples)
+
+        self.assertTrue(
+            np.max(np.abs(
+                delay(original, tau) - delay_vectorized(original, tau)
+            )) < 1e-8
+        )
+
+
+    def test_remainder(self):
+        samples = 1000
+        tau = 39
+        original = np.random.rand(samples)
+
+        self.assertTrue(samples % tau != 0)
+
+        self.assertTrue(
+            np.max(np.abs(
+                delay(original, tau) - delay_vectorized(original, tau)
+            )) < 1e-8
+        )
+
+
+if __name__ == '__main__':
+    unittest.main()
