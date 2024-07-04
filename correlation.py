@@ -2,6 +2,12 @@ import numpy as np
 import unittest
 
 
+def cross_correlation(x, shift):
+    # only overlapping part is computed
+    # assuming zero mean signals, we normalize with the number of samples under the window
+    return np.dot(x[shift:], x[:(x.size-shift)]) / (x.size - shift)
+
+
 # maybe we will need FFT based solutions, especially with large tracks
 def autocorr(x):
     # https://stackoverflow.com/questions/643699/how-can-i-use-numpy-correlate-to-do-autocorrelation
