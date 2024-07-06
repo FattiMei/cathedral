@@ -1,5 +1,6 @@
-import correlation as corr
 import numpy as np
+import correlation
+import delay
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
@@ -14,14 +15,13 @@ if __name__ == '__main__':
     # Create the figure and the line that we will manipulate
     fig, ax = plt.subplots()
     ax.set_title('Autocorrelation of a delayed random track')
-    line, = ax.plot(corr.autocorr(corr.delay(original, 0)))
+    line, = ax.plot(corr.autocorr(original))
     ax.set_xlabel('tau')
     ax.set_ylabel('Autocorrelation')
 
 
     # adjust the main plot to make room for the sliders
     fig.subplots_adjust(left=0.25, bottom=0.5)
-
 
     delay_slider = Slider(
         fig.add_axes([0.25, 0.1, 0.65, 0.03]),
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     # The function to be called anytime a slider's value changes
     def update(val):
-        line.set_ydata(corr.autocorr(corr.delay(
+        line.set_ydata(corr.autocorr(delay.apply(
             original, 
             time    = int(delay_slider.val),
             level   = level_slider.val,

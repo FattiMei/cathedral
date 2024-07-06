@@ -1,21 +1,9 @@
 import sys
 import time
-import correlation as corr
+import correlation
 from scipy.io import wavfile
 import numpy as np
 import matplotlib.pyplot as plt
-
-
-def solve_inverse_delay(x, shift_range, dtype = np.float64):
-    x = np.asarray(x, dtype)
-    x -= np.mean(x)
-
-    result = np.zeros(len(shift_range))
-
-    for i in shift_range:
-        result[i] = corr.cross_correlation(x, i)
-
-    return result
 
 
 if __name__ == '__main__':
@@ -31,7 +19,7 @@ if __name__ == '__main__':
 
     # do cross correlations with a maximum shift of 1 second
     start_time = time.perf_counter()
-    solution = solve_inverse_delay(merged_channels, range(samplerate), dtype = np.float32)
+    solution = correlation.invert_delay_serial(merged_channels, samplerate)
     print(f'Computation time: {time.perf_counter() - start_time:.2f} seconds')
 
     fig, ax = plt.subplots()
