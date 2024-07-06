@@ -6,8 +6,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def solve_inverse_delay(x, shift_range):
+def solve_inverse_delay(x, shift_range, dtype = np.float64):
+    x = np.asarray(x, dtype)
     x -= np.mean(x)
+
     result = np.zeros(len(shift_range))
 
     for i in shift_range:
@@ -22,15 +24,15 @@ if __name__ == '__main__':
         sys.exit(1)
 
 
-    # tracks may have multiple channels
+    # tracks may have multiple channels, just merge them
     samplerate, data = wavfile.read(sys.argv[1])
-    merged_channels = np.asarray(np.sum(data, axis=1), dtype=np.float64)
+    merged_channels = np.sum(data, axis=1)
 
 
     # do cross correlations with a maximum shift of 1 second
     start_time = time.perf_counter()
-    solution = solve_inverse_delay(merged_channels, range(samplerate))
-    print(f'Computation time: {time.perf_counter() - start_time} seconds')
+    solution = solve_inverse_delay(merged_channels, range(samplerate), dtype = np.float32)
+    print(f'Computation time: {time.perf_counter() - start_time:.2f} seconds')
 
     fig, ax = plt.subplots()
     ax.set_title('Autocorrelation of a music track')
