@@ -10,12 +10,13 @@ NSAMPLES = 300
 
 if __name__ == '__main__':
     original = np.random.rand(NSAMPLES)
+    solve = lambda track: correlation.invert_delay_serial(track, track.size - 1)
 
 
     # Create the figure and the line that we will manipulate
     fig, ax = plt.subplots()
     ax.set_title('Autocorrelation of a delayed random track')
-    line, = ax.plot(corr.autocorr(original))
+    line, = ax.plot(solve(original))
     ax.set_xlabel('tau')
     ax.set_ylabel('Autocorrelation')
 
@@ -50,7 +51,7 @@ if __name__ == '__main__':
 
     # The function to be called anytime a slider's value changes
     def update(val):
-        line.set_ydata(corr.autocorr(delay.apply(
+        line.set_ydata(solve(delay.apply(
             original, 
             time    = int(delay_slider.val),
             level   = level_slider.val,
