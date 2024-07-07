@@ -14,7 +14,11 @@ if __name__ == '__main__':
 
     # tracks may have multiple channels, just merge them
     samplerate, data = wavfile.read(sys.argv[1])
-    merged_channels = np.sum(data, axis=1)
+
+    try:
+        merged_channels = np.sum(data, axis=1)
+    except:
+        merged_channels = data
 
 
     # do cross correlations with a maximum shift of 1 second
