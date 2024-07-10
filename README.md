@@ -12,6 +12,9 @@ Develop a simple python application to interactively:
   * generate random signals and apply different delay settings
   * see in real-time the effect of such changes to the autocorrelation
 
+
+![plot](./img/screenshot_demo_random.png)
+
 ## Part 2 - Full demo
   * compute the auto correlation for the "Cathedral" track to solve the "inverse delay" problem
   * estimate with minimal effort the program time
