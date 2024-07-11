@@ -11,19 +11,14 @@ if __name__ == '__main__':
         print("Usage: python demo_wav.py <wav audio file>")
         sys.exit(1)
 
-
     # tracks may have multiple channels, just merge them
     samplerate, data = wavfile.read(sys.argv[1])
-
-    try:
-        merged_channels = np.sum(data, axis=1)
-    except:
-        merged_channels = data
-
+    single_channel   = data[:, 0]
+    print(f'{single_channel.size} samples at {samplerate} Hz')
 
     # do cross correlations with a maximum shift of 1 second
     start_time = time.perf_counter()
-    solution = correlation.invert_delay_opencl(merged_channels, samplerate)
+    solution = correlation.invert_delay_opencl(single_channel, samplerate)
     print(f'Computation time: {time.perf_counter() - start_time:.2f} seconds')
 
     fig, ax = plt.subplots()
