@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     # do cross correlations with a maximum shift of 1 second
     start_time = time.perf_counter()
-    solution = correlation.invert_delay_opencl(single_channel, samplerate)
+    solution = correlation.invert_delay_fft(single_channel, samplerate)
     print(f'Computation time: {time.perf_counter() - start_time:.2f} seconds')
 
     fig, ax = plt.subplots()

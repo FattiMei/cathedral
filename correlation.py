@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.fft import fft, ifft
 import pyopencl as cl
 import matplotlib.pyplot as plt
 
@@ -20,6 +21,16 @@ def invert_delay_serial(x, max_shift):
     return result
 
 
+def invert_delay_fft(x, samplerate):
+    X = fft(x)
+    P = np.abs(X) ** 2
+
+    R_x = ifft(P).real
+    R_x = R_x / R_x[0]
+
+    return R_x[0:samplerate]
+
+
 def setup_opencl_runtime():
     ctx   = cl.create_some_context()
     queue = cl.CommandQueue(ctx, properties = cl.command_queue_properties.PROFILING_ENABLE)
@@ -36,13 +47,11 @@ def setup_opencl_runtime():
             if (i < rows) {
                 float acc = 0.0;
 
-                for (int j = 0; j < n; ++j) {
-                    if (i + j < n) {
-                        acc += x[i + j] * x[j];
-                    }
+                for (int j = 0; j < n - i; ++j) {
+                    acc += x[i + j] * x[j];
                 }
 
-                result[i] = acc / (float) (n - i);
+                result[i] = acc;
             }
         }
     """).build()
