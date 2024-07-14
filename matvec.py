@@ -5,10 +5,8 @@ import matplotlib.pyplot as plt
 
 def round_to_upper_multiple(x, mod):
     # maybe there are more clever implementations
-    if mod is None:
+    if mod is None or x % mod == 0:
         return x
-    elif x % mod == 0:
-        return mod
     else:
         return x + (mod - x % mod)
 
