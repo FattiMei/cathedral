@@ -17,7 +17,7 @@ if __name__ == '__main__':
     sample_delay = int(1e-3 * ms_delay * samplerate)
 
     start_time = time.perf_counter()
-    delayed = apply_delay(data, sample_delay)
+    delayed = apply_delay_vectorized(data, sample_delay)
     print(f'Computation time: {time.perf_counter() - start_time:.2f} seconds')
 
     save_track('out.wav', samplerate, delayed)
