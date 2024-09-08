@@ -1,9 +1,10 @@
 import sys
 import time
-import correlation
-from scipy.io import wavfile
 import numpy as np
+import correlation
 import matplotlib.pyplot as plt
+
+from track import *
 
 
 if __name__ == '__main__':
@@ -12,13 +13,12 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # tracks may have multiple channels, just merge them
-    samplerate, data = wavfile.read(sys.argv[1])
-    single_channel   = data[:, 0]
-    print(f'{single_channel.size} samples at {samplerate} Hz')
+    samplerate, data = load_track(sys.argv[1], merge=True)
+    print(f'{data.size} samples at {samplerate} Hz')
 
     # do cross correlations with a maximum shift of 1 second
     start_time = time.perf_counter()
-    solution = correlation.invert_delay_fft(single_channel, samplerate)
+    solution = correlation.invert_delay_fft(data, samplerate)
     print(f'Computation time: {time.perf_counter() - start_time:.2f} seconds')
 
     fig, ax = plt.subplots()

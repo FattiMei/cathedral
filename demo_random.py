@@ -9,7 +9,7 @@ NSAMPLES = 300
 
 
 if __name__ == '__main__':
-    original = np.random.rand(NSAMPLES)
+    original = 2 * np.random.rand(NSAMPLES) - 1
     solve = lambda track: correlation.invert_delay_serial(track, track.size - 1)
 
 
@@ -59,8 +59,7 @@ if __name__ == '__main__':
         )))
 
         fig.canvas.draw_idle()
-        
-        
+
     # register the update function with each slider
     delay_slider.on_changed(update)
     feedback_slider.on_changed(update)
