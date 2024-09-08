@@ -22,3 +22,19 @@ def save_track(file, samplerate, data):
 
 def merge_tracks(a, b):
     return (a + b) / 2
+
+
+def apply_delay(track, time: int, level: float = 0.5, feedback: float = 0.5):
+    if time == 0:
+        return track
+    elif time < 0 or time >= track.size:
+        return None
+
+    buffer = np.zeros(time)
+    result = np.zeros(track.size)
+
+    for i in range(track.size):
+        result[i] += (1 - level) * track[i] + level * buffer[i % time]
+        buffer[i % time] = track[i] + feedback * buffer[i % time]
+
+    return result
