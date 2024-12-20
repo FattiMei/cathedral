@@ -25,28 +25,23 @@ Develop a simple python application to interactively:
 ```(bash)
 python demo_wav.py <.wav audio file>
 ```
-
-  * compute the auto correlation for the "Cathedral" track to solve the "inverse delay" problem
-  * estimate with minimal effort the program time
-  * explore different parallelization techniques (openmp, gpu offloading)
-
+  * compute the autocorrelation of an .wav audio track to solve the "inverse delay" problem
+  * measure the program time
 
 ### Naive implementation
-Computing autocorrelations by dot product of the signal with a shifted version of itself was the easiest solution. However, this approach is not scalable and it's inefficient from a memory access perspective.
-
-Parallelizing this task exploited the fact that two consecutive cross-correlations essentially use the same data, so they can be grouped in a GPU warp to use SIMD operations. Despite using the full capabilities of the GPU, the execution time for a 4 minute song was around 100 seconds.
+Computing autocorrelations by dot product of the signal with a shifted version of itself is the easiest solution. However, this approach is not feasible for signals with more than 1e05 samples. The poor performance is not a matter of language choice: compiled implementations will improve the execution time and parallel computing techniques can be applied to the problem, but at the end of the day it's still an inefficient algorithm.
 
 ### FFT
-The FFT can be used to compute efficiently the autocorrelation of a big signal as described in https://en.wikipedia.org/wiki/Autocorrelation#Efficient_computation
-Using already implemented algorithms I was able to reduce the runtime under 4 seconds, thus eliminating the need for gpu offloading (where the data transfer latency could outweight the throughput benefits)
-The two implementation gives similar results, so I favour the fastest one
-
+The FFT can be used to efficiently compute the autocorrelation of a big signal as described [at this wikipedia page](https://en.wikipedia.org/wiki/Autocorrelation#Efficient_computation).
+With already existing algorithms the processing time for a 4 minute track is about 1 second while the best naive implementation was doing 400 seconds. This proves the point that algorithm selection (and thus problem understanding) is the most relevant performance factor. **Optimizations like vectorization, multiprocessing and GPU computing must serve the programmer, not the other way around.**
 
 ## Comments on the effectiveness of the approach
 The autocorrelation approach works really well when applied to "Cathedral" because the track is dominated by a relatively clean guitar sound. The plot shows a strong response at around 400 ms so I'm inclined to think that the original recording was made with such delay effect.
 
 ![plot](./img/cathedral_auto_correlation.png)
 
-Other more interesting tracks such as "Run like hell" don't show any sign of delay. A possible explanation is that the delayed guitar is only a part of the song and it's mixed with drums, lyrics and other instruments. Possible solutions include:
+Other more interesting tracks such as "Run like hell" show minimal signs of delay. A possible explanation is that the delayed guitar is only a part of the song and it's mixed with drums, lyrics and other instruments. Possible solutions include:
   * find isolated guitar versions of the song
   * cut only relevant parts of the track (maybe mute the other parts) and repeat the experiment
+
+![plot](./img/run_like_hell_auto_correlation.png)
