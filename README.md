@@ -5,10 +5,10 @@ This project started from the Eddie Van Halen song "Cathedral". It features a de
 
 If you take a signal and apply a delay, the resulting signal will be correlated with the original one because there are repeating parts. If you compute the correlation between the delayed track and a translated version (operation known as autocorrelation) the result will hopefully peak when the time translation is equal to the delay.
 
-My first implementation was numerically unstable, most probably because I was computing the autocorrelation of non-zero mean signals. This project is composed in two parts
+My first implementation was numerically unstable, most probably because I was computing the autocorrelation of non-zero mean signals.
 
 
-## Part 1 - Interactivity
+## Demo 1 - Interactivity
 ```(bash)
 python demo_random.py
 ```
@@ -21,13 +21,24 @@ Develop a simple python application to interactively:
 ![plot](./img/screenshot_demo_random.png)
 
 
-## Part 2 - Full demo
+## Demo 2 - Full demo
 ```(bash)
 python demo_wav.py <.wav audio file>
 ```
   * compute the autocorrelation of an .wav audio track to solve the "inverse delay" problem
   * measure the program time
 
+
+## Demo 3 - Apply delay
+```(bash)
+usage: demo_delay.py [-h] [-delay DELAY] [-level LEVEL] [-feedback FEEDBACK] [-output OUTPUT] file
+```
+
+  * take an audio track and apply a simple delay controlling milliseconds, level and feedback
+  * use an handy command line interface
+
+
+## Algorithm selection
 ### Naive implementation
 Computing autocorrelations by dot product of the signal with a shifted version of itself is the easiest solution. However, this approach is not feasible for signals with more than 1e05 samples. The poor performance is not a matter of language choice: compiled implementations will improve the execution time and parallel computing techniques can be applied to the problem, but at the end of the day it's still an inefficient algorithm.
 
