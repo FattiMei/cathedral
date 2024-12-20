@@ -4,31 +4,36 @@ import pyopencl as cl
 import matplotlib.pyplot as plt
 
 
-def cross_correlation(x, shift):
-    # only overlapping part is computed
-    # normalize with the number of samples under the window
+def xcorr(x, shift):
+    # only overlapping part is computed and result is normalized with the number of samples under the window
     return np.dot(x[shift:], x[:(x.size-shift)]) / (x.size - shift)
 
 
-def invert_delay_serial(x, max_shift):
-    result = np.zeros(max_shift)
-    x  = np.asarray(x, np.float32)
-    x -= np.mean(x)
+def correlogram(x: np.array, maxshift, method='fft'):
+    assert(0 < maxshift < len(x))
 
-    for i in range(max_shift):
-        result[i] = cross_correlation(x, i)
+    if method == 'fft':
+        X = fft(x)
+        P = np.abs(X) ** 2
 
-    return result
+        corr = ifft(P).real
+        corr = corr / corr[0]
 
+        return corr[0:maxshift]
 
-def invert_delay_fft(x, samplerate):
-    X = fft(x)
-    P = np.abs(X) ** 2
+    elif method == 'serial':
+        corr = np.zeros(maxshift)
 
-    R_x = ifft(P).real
-    R_x = R_x / R_x[0]
+        x = np.asarray(x, np.float32)
+        x = x - np.mean(x)
 
-    return R_x[0:samplerate]
+        for i in range(maxshift):
+            corr[i] = xcorr(x, i)
+
+        return corr
+
+    else:
+        ValueError("Supported methods are {'fft, 'serial'}")
 
 
 def setup_opencl_runtime():

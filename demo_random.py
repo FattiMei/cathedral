@@ -9,17 +9,18 @@ NSAMPLES = 300
 
 
 if __name__ == '__main__':
-    original = 2 * np.random.rand(NSAMPLES) - 1
-    solve = lambda track: correlation.invert_delay_serial(track, track.size - 1)
-
+    track = np.random.uniform(low=-1.0, high=1.0, size=NSAMPLES)
+    correlogram = lambda track: correlation.correlogram(track, NSAMPLES-1, method='fft')
 
     # Create the figure and the line that we will manipulate
     fig, ax = plt.subplots()
     ax.set_title('Autocorrelation of a delayed random track')
-    line, = ax.plot(solve(original))
     ax.set_xlabel('tau')
     ax.set_ylabel('Autocorrelation')
 
+    corr = correlogram(track)
+    line, = ax.plot(corr)
+    point = ax.scatter(0, corr[0], color='red', facecolors='none', marker='o')
 
     # adjust the main plot to make room for the sliders
     fig.subplots_adjust(left=0.25, bottom=0.5)
@@ -28,7 +29,7 @@ if __name__ == '__main__':
         fig.add_axes([0.25, 0.1, 0.65, 0.03]),
         label='time steps',
         valmin=0,
-        valmax=original.size-1,
+        valmax=track.size-1,
         valinit=0,
         valstep=1
     )
@@ -51,12 +52,17 @@ if __name__ == '__main__':
 
     # The function to be called anytime a slider's value changes
     def update(val):
-        line.set_ydata(solve(delay.apply(
-            original, 
-            time    = int(delay_slider.val),
+        shift = int(delay_slider.val)
+
+        corr = correlogram(delay.apply(
+            track, 
+            time    = shift,
             level   = level_slider.val,
             feedback= feedback_slider.val
-        )))
+        ))
+
+        line.set_ydata(corr)
+        point.set_offsets([shift, corr[shift]])
 
         fig.canvas.draw_idle()
 
